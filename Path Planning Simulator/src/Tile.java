@@ -2,13 +2,13 @@ import java.awt.Color;
 
 public class Tile {
 
-    private boolean hasTarget, isRead, isScanned;
+    private boolean hasTarget, isChecked, isScanned;
     private Color color;
     private int x, y;
     private char side;
 
     public Tile(int x, int y, char side) {
-        isRead= false;
+        isChecked= false;
         isScanned= false;
         hasTarget= false;
         color= R.black;
@@ -17,8 +17,8 @@ public class Tile {
         this.side= side;
     }
 
-    public void read() {
-        isRead= true;
+    public void check() {
+        isChecked= true;
         color= R.green;
     }
 
@@ -32,8 +32,8 @@ public class Tile {
         color= R.red;
     }
 
-    public boolean isRead() {
-        return isRead;
+    public boolean isChecked() {
+        return isChecked;
     }
 
     public boolean isScanned() {

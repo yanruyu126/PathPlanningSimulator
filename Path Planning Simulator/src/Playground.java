@@ -14,9 +14,9 @@ public class Playground {
     }
 
     public void generateItems() {
-        Item item1= new Item(500, 100, true);
+        Item item1= new Item(600, 100, true);
         Item item2= new Item(100, 300, false);
-        Item item3= new Item(400, 600, false);
+        Item item3= new Item(500, 600, false);
         items.add(item1);
         items.add(item2);
         items.add(item3);

@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 
 public class Canvas extends JPanel implements ActionListener {
+    private static final long serialVersionUID= 1L;
     Bot bot;
     Playground pg;
 
@@ -18,6 +19,7 @@ public class Canvas extends JPanel implements ActionListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d= (Graphics2D) g;
+        bot.drawKnownArea(g2d);
         pg.draw(g2d);
         bot.drawBot(g2d);
     }

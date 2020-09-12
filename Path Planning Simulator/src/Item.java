@@ -53,7 +53,21 @@ public class Item {
         return availableTiles;
     }
 
+    public void check() {
+        for (Tile tile : tiles) {
+            tile.check();
+        }
+    }
+
     public ArrayList<Tile> tiles() {
         return tiles;
+    }
+
+    public double x() {
+        return centerX;
+    }
+
+    public double y() {
+        return centerY;
     }
 }

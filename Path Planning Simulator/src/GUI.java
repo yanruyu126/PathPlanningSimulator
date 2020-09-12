@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 public class GUI extends JFrame {
+    private static final long serialVersionUID= 1L;
     static Canvas canvas;
 
     public GUI() {
@@ -31,6 +32,7 @@ public class GUI extends JFrame {
         Timer t= new Timer(100, canvas);
         t.start();
         Bot myBot= canvas.bot;
+        myBot.scan();
         myBot.forward(300);
         myBot.turnTo(60);
         myBot.forward(200);
