@@ -2,18 +2,19 @@ import java.awt.Color;
 
 public class Tile {
 
-    private boolean hasItem, hasTarget, isRead, isScanned;
+    private boolean hasTarget, isRead, isScanned;
     private Color color;
     private int x, y;
+    private char side;
 
-    public Tile(int x, int y) {
+    public Tile(int x, int y, char side) {
         isRead= false;
         isScanned= false;
         hasTarget= false;
-        hasItem= false;
-        color= R.white;
+        color= R.black;
         this.x= x;
         this.y= y;
+        this.side= side;
     }
 
     public void read() {
@@ -22,22 +23,13 @@ public class Tile {
     }
 
     public void scan() {
-        color= R.lightblue;
-        if (hasItem) {
-            isScanned= true;
-            color= R.blue;
-        }
+        isScanned= true;
+        color= R.blue;
     }
 
     public void setTarget() {
         hasTarget= true;
-        hasItem= true;
         color= R.red;
-    }
-
-    public void setItem() {
-        hasItem= true;
-        color= R.black;
     }
 
     public boolean isRead() {
@@ -46,10 +38,6 @@ public class Tile {
 
     public boolean isScanned() {
         return isScanned;
-    }
-
-    public boolean hasItem() {
-        return hasItem;
     }
 
     public boolean hasTarget() {
@@ -66,6 +54,10 @@ public class Tile {
 
     public int y() {
         return y;
+    }
+
+    public char side() {
+        return side;
     }
 
 }

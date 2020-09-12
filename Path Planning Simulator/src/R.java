@@ -12,8 +12,8 @@ public class R {
 
     public final static int Frame_Size= 800;
     /** The width (in pixels) of a tile on the grid */
-    public final static int TILE_WIDTH= 10;
-    public final static int TILE_HEIGHT= 10;
+
+    public final static int TILE_LENGTH= 10;
 
     /** counts in tiles */
     public final static int PG_HEIGHT= 100;
@@ -28,6 +28,6 @@ public class R {
     public final static int bot_width= 100;
     public final static int bot_length= 120;
 
-    public final static int scan_distance= 250;
+    public final static int scan_distance= 330;
 
 }
