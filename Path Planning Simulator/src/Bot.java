@@ -48,6 +48,10 @@ public class Bot {
 //        }
     }
 
+    public void backToOrigin() {
+
+    }
+
     // ------------ Robot Methods ------------- //
     public void turnTo(int degree) {
 
@@ -79,24 +83,22 @@ public class Bot {
         delay(20);
     }
 
-    public HashMap<Integer, Integer> scan() {
+    public HashMap<Integer, Integer> scan(int range) {
         HashMap<Integer, Integer> data= new HashMap<>();
         ArrayList<Tile> tiles= tilesVisible();
 
         for (Tile tile : tiles) {
             int dis= calculateDistance(tile.x(), tile.y());
-            int ang= tileAngle(tile);
+            int ang= angleFromBot(tile.x(), tile.y());
+            int angDiff= Math.abs(degreeSubtraction(ang, angle));
 
-            if (dis < R.US_dis) {
-                try {
-                    dis= Math.min(data.get(ang), dis);
-                } catch (Exception e) {}
+            if (dis < R.US_dis && angDiff < range) {
                 data.put(ang, dis);
                 tile.scan();
                 delay(20);
             }
         }
-        updateKnownArea();
+        updateKnownArea(range);
         return data;
     }
 
@@ -154,14 +156,21 @@ public class Bot {
         return (int) dis;
     }
 
-    public int tileAngle(Tile tile) {
+    public int angleFromBot(double x, double y) {
         double radians;
         try {
-            radians= Math.atan((tile.x() - botX) / (tile.y() - botY));
+            radians= Math.atan((y - botY) / (x - botX));
         } catch (Exception e) {
-            radians= 0;
+            radians= Math.PI / 2;
         }
-        return (int) Math.toDegrees(radians);
+
+        int degrees= (int) Math.toDegrees(radians); // +-90
+        if (y - botY < 0 && x - botX < 0) {
+            degrees+= 180;
+        } else if (y - botY > 0 && x - botX < 0) {
+            degrees-= 180;
+        }
+        return degrees >= 0 ? degrees : 360 + degrees;
     }
 
     public void check() {
@@ -172,18 +181,23 @@ public class Bot {
         }
     }
 
-    private void updateKnownArea() {
+    public int degreeSubtraction(int a, int b) {
+        int c= a - b;
+        if (c >= 0) return c < 180 ? c : c - 360;
+        else return c > -180 ? c : c + 360;
+    }
+
+    private void updateKnownArea(int range) {
         for (int i= 0; i < R.known_area_size; i++ ) {
             for (int j= 0; j < R.known_area_size; j++ ) {
                 int size= R.Frame_Size / R.known_area_size;
                 int x= i * size;
                 int y= j * size;
+                int ang= angleFromBot(x, y);
+                int angDiff= Math.abs(degreeSubtraction(ang, angle));
 
-                if (calculateDistance(x, y) < R.US_dis) {
+                if (calculateDistance(x, y) < R.US_dis && angDiff < range) {
                     knownArea[i][j]= 1;
-                    System.out.println(x);
-                    System.out.println(y);
-                    System.out.println("");
                 }
             }
         }
