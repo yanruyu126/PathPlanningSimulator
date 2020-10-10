@@ -107,7 +107,7 @@ public class Bot {
         }
     }
 
-    /** Algorithm for "shortest path" back to the origin point. */
+    /** Dynamic heuristic for the "shortest path" back to the origin point. */
     public void backToOrigin() {
         int disFromOrigin= calculateDistance(0, 0);
         while (disFromOrigin > 50) {
