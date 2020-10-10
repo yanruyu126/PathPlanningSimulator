@@ -22,6 +22,7 @@ public class Canvas extends JPanel implements ActionListener {
         bot.drawKnownArea(g2d);
         pg.draw(g2d);
         bot.drawBot(g2d);
+        bot.drawPoints(g2d);
     }
 
     @Override

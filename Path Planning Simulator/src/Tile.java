@@ -19,12 +19,15 @@ public class Tile {
 
     public void check() {
         isChecked= true;
+        isScanned= true;
         color= R.green;
     }
 
     public void scan() {
-        isScanned= true;
-        color= R.blue;
+        if (!isScanned) {
+            isScanned= true;
+            color= R.blue;
+        }
     }
 
     public void setTarget() {

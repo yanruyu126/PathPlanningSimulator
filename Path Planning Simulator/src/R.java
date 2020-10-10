@@ -5,8 +5,10 @@ public class R {
     public final static Color black= new Color(0, 0, 0);
     public final static Color white= new Color(255, 255, 255);
     public final static Color red= new Color(255, 0, 0);
+    public final static Color darkgreen= new Color(150, 200, 75);
     public final static Color green= new Color(178, 255, 102);
     public final static Color blue= new Color(0, 128, 255);
+    public final static Color darkblue= new Color(0, 100, 200);
     public final static Color lightyellow= new Color(255, 255, 224);
     public final static Color grey= new Color(125, 125, 125);
 
@@ -27,7 +29,7 @@ public class R {
 
     // Robot parameters
     /** Change of angle in degrees when spin() is called */
-    public final static int spin_angle= 5;
+    public final static int spin_angle= 2;
 
     /** Change of distance (in pixels) when move() is called */
     public final static int step= 5;
@@ -36,8 +38,10 @@ public class R {
     public final static int US_dis= 330;
 
     /** The maximum distance (in pixels) that the RFID sensor can scan */
-    public final static int RFID_dis= 330;
+    public final static int RFID_dis= 40;
 
     public final static int known_area_size= 200;
+
+    public final static int detour_dis= 100;
 
 }

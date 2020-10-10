@@ -70,4 +70,8 @@ public class Item {
     public double y() {
         return centerY;
     }
+
+    public boolean isTarget() {
+        return isTarget;
+    }
 }

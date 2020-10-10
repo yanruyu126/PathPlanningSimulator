@@ -33,10 +33,15 @@ public class GUI extends JFrame {
         t.start();
         Bot myBot= canvas.bot;
 
-        myBot.scan(10);
-        myBot.forward(300);
-        myBot.turnTo(60);
-        myBot.forward(200);
-        myBot.scan(145);
+        myBot.search();
+
+//        myBot.scan(10);
+//        myBot.forward(300);
+//        myBot.turnTo(60);
+//        myBot.forward(200);
+//        myBot.scan(145);
+//        myBot.turnTo(100);
+//        myBot.forward(800);
+//        myBot.backToOrigin();
     }
 }

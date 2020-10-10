@@ -14,15 +14,18 @@ public class Playground {
     }
 
     public void generateItems() {
-        Item item1= new Item(600, 100, true);
-        Item item2= new Item(100, 300, false);
-        Item item3= new Item(500, 600, false);
+        Item item1= new Item(200, 400, false);
+//        Item item2= new Item(100, 400, false);
+        Item item3= new Item(550, 650, true);
+        Item item4= new Item(700, 200, false);
         items.add(item1);
-        items.add(item2);
+//        items.add(item2);
         items.add(item3);
+        items.add(item4);
         tiles.addAll(item1.tiles());
-        tiles.addAll(item2.tiles());
+//        tiles.addAll(item2.tiles());
         tiles.addAll(item3.tiles());
+        tiles.addAll(item4.tiles());
 
     }
 
