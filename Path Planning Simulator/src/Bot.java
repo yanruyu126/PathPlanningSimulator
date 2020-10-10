@@ -179,7 +179,7 @@ public class Bot {
         forward(-distance);
     }
 
-    public void move(double radians, boolean isForward) {
+    private void move(double radians, boolean isForward) {
         int dir= isForward ? 1 : -1;
         botX+= Math.cos(radians) * R.step * dir;
         botY+= Math.sin(radians) * R.step * dir;
