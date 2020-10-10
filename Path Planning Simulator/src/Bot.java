@@ -6,16 +6,46 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+/** A class for simulating Minibot with three methods of main categories:
+ *
+ * 1. Path Planning Algorithms: search for an object with a specific RFID tag. <br>
+ * Locomotion, ultrasonic sensor, and RFID sensor methods are called.
+ *
+ * 2. Robot Methods: simulation of locomotion, ultrasonic sensor, and RFID <br>
+ * sensor. See Minibot documentation and codes for more info. <br>
+ * .. https://github.com/cornell-cup/MinibotHandoff <br>
+ * .. *Check BottomArduinoSPI.ino for locomotion, and TopArduinoSPI.ino <br>
+ * .. for sensors; check PiArduino.py to have an overview of the features <br>
+ * .. from the top level.
+ *
+ * 3. Graphic Methods: Draw the robot and update information for the <br>
+ * Playground as Minibot moves. */
 public class Bot {
+    /** Coordinates of the geometric center of Minibot */
+    int botX, botY;
 
-    int botX;
-    int botY;
+    /** The angle that Minibot is facing in 0-360 degrees, with the <br>
+     * right direction to be 0 degree. */
     int angle;
+
+    /** The environment that Minibot is running in. */
     Playground pg;
+
+    /** A 2D array of 0s and 1s which divides the playground area into
+     * [R.known_area_size]*[R.known_area_size] pieces. 1 marks that the <br>
+     * area has been scanned by the ultrasonic sensor, while 0 marks that <br>
+     * the area has not been scanned yet. */
     int[][] knownArea;
+
+    /** A list of Point obtained by the ultrasonic sensor, indicating <br>
+     * the existence of an possible item. */
     ArrayList<Point> knownPoints;
+
+    /** Whether the target item has been found. */
     boolean hasFound;
 
+    /** The constructor initialize an instance of Minibot at the top-left <br>
+     * corner of the Playground [pg] which faces the 0 degree angle. */
     public Bot(Playground pg) {
         botX= R.bot_length / 2;
         botY= R.bot_width / 2;
@@ -27,8 +57,12 @@ public class Bot {
     }
 
     // ------------ Path Planning Algorithm ------------- //
-    public void search() {
 
+    /** The framework of the dynamic path planning algorithm. A cycle <br>
+     * for searching is 1. scan the area within 180 degrees in front <br>
+     * of the robot. 2. call updatePath(). Once the target item is found, <br>
+     * it will stop looping and run backToOrigin(). */
+    public void search() {
         while (!hasFound) {
             System.out.println("Ultrasonic Scanning");
             scan(90);
@@ -39,7 +73,22 @@ public class Bot {
         backToOrigin();
     }
 
-    /** Path planning algorithm */
+    /** One cycle of the dynamic path planning algorithm. It runs <br>
+     * according to the current knownPoints and knownArea.
+     *
+     * This method will end with three possible scenarios:
+     *
+     * 1. If there is some points in knownPoints (probably obtained by <br>
+     * the scan() method run previous to it in search()), then go and <br>
+     * check the nearest one with RFID sensor. <br>
+     * .. a. If it is the item we want, "pick it up" and go back <br>
+     * .. to the starting point (0, 0). <br>
+     * .. b. If it is not the item we want, detour from it and move to the next cycle.
+     *
+     * 2. If there is nothing in knownPoints, drive in a direction that <br>
+     * is least known to the Minibot for the distance of ultrasonic <br>
+     * sensor's sensing range. (because we know that there will not <br>
+     * be obstacles in between) */
     public void updatePath() {
         Point nearestP= findNearest(uncheckedPoints());
         if (nearestP != null) {
