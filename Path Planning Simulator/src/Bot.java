@@ -202,6 +202,15 @@ public class Bot {
         return new_dir;
     }
 
+    /** Prevent the Minibot from running off the edge when the reflectance sensor detects the edge.
+     * Will get called when readReflectance() returns true. */
+    private void turnBackFromEdge() {
+        // TODO: Implement this method with locomotion methods so that the
+        // Minibot stays in the area marked by the black tape.
+        // Feel free to modify forward() and move() to incorporate this feature.
+
+    }
+
     // ------------ Robot Methods ------------- //
     public void turnTo(int degree) {
         int diff= degree - angle;
@@ -296,6 +305,12 @@ public class Bot {
         checkNearby();
         delay(500);
         return check();
+    }
+
+    /** Returns true the reflectance sensor is placed over a black type. */
+    public boolean readReflectance() {
+
+        return false;
     }
 
     // ------------ Graphic Methods ------------- //
