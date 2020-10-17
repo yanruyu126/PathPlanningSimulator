@@ -245,11 +245,11 @@ public class Bot {
         int targetX= botX + (int) (Math.cos(radians) * distance);
         int targetY= botY + (int) (Math.sin(radians) * distance);
 
-        if (targetX < 0) targetX= 0;
-        if (targetX > R.Frame_Size) targetX= R.Frame_Size;
-
-        if (targetY < 0) targetY= 0;
-        if (targetY > R.Frame_Size) targetY= R.Frame_Size;
+//        if (targetX < 0) targetX= 0;
+//        if (targetX > R.Frame_Size) targetX= R.Frame_Size;
+//
+//        if (targetY < 0) targetY= 0;
+//        if (targetY > R.Frame_Size) targetY= R.Frame_Size;
 
         if (Math.abs(Math.sin(radians)) < 0.71) {
             while (Math.abs(botX - targetX) > 20) {
@@ -270,6 +270,7 @@ public class Bot {
         int dir= isForward ? 1 : -1;
         botX+= Math.cos(radians) * R.step * dir;
         botY+= Math.sin(radians) * R.step * dir;
+        System.out.println(readReflectance());
         delay(20);
     }
 
@@ -309,8 +310,7 @@ public class Bot {
 
     /** Returns true the reflectance sensor is placed over a black type. */
     public boolean readReflectance() {
-
-        return false;
+        return botX < 0 || botX > R.Frame_Size || botY < 0 || botY > R.Frame_Size;
     }
 
     // ------------ Graphic Methods ------------- //

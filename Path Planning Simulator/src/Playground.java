@@ -1,5 +1,6 @@
 
 //testing branches !!!!
+import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
@@ -36,5 +37,11 @@ public class Playground {
             g.setColor(tile.color());
             g.fillRect(tile.x(), tile.y(), R.TILE_LENGTH, R.TILE_LENGTH);
         }
+
+        float thickness= 15;
+        BasicStroke newStroke= new BasicStroke(thickness);
+        g.setStroke(newStroke);
+        g.setColor(R.black);
+        g.drawRect(0, 0, R.Frame_Size, R.Frame_Size);
     }
 }
