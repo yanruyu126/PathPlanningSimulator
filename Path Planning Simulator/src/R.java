@@ -29,7 +29,7 @@ public class R {
 
     // Robot parameters
     /** Change of angle in degrees when spin() is called */
-    public final static int spin_angle= 2;
+    public final static int spin_angle= 5;
 
     /** Change of distance (in pixels) when move() is called */
     public final static int step= 5;
@@ -38,7 +38,7 @@ public class R {
     public final static int US_dis= 330;
 
     /** The maximum distance (in pixels) that the RFID sensor can scan */
-    public final static int RFID_dis= 40;
+    public final static int RFID_dis= 80;
 
     public final static int known_area_size= 200;
 

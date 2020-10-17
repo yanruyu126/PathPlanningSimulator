@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * 3. Graphic Methods: Draw the robot and update information for the <br>
  * Playground as Minibot moves. */
 public class Bot {
-    /** Coordinates of the geometric center of Minibot */
+    /** Coordinates of the middle-front Minibot */
     int botX, botY;
 
     /** The angle that Minibot is facing in 0-360 degrees, with the <br>
@@ -47,7 +47,7 @@ public class Bot {
     /** The constructor initialize an instance of Minibot at the top-left <br>
      * corner of the Playground [pg] which faces the 0 degree angle. */
     public Bot(Playground pg) {
-        botX= R.bot_length / 2;
+        botX= R.bot_length;
         botY= R.bot_width / 2;
         angle= 0;
         this.pg= pg;
@@ -155,7 +155,7 @@ public class Bot {
         backward(R.detour_dis);
         // int ang= angleFromBot(p.x, p.y);
         System.out.println("Detour, turning");
-        turnTo(90);
+        turnTo(directionAwayFrom(p));
         System.out.println("Detour, forwarding");
         forward(R.bot_length);
     }
@@ -165,21 +165,41 @@ public class Bot {
         for (Point p : knownPoints) {
             if (p.isChecked == false) {
                 result.add(p);
+//                System.out.println("x: " + p.x);
+//                System.out.println("y: " + p.y);
+//                System.out.println("");
             }
         }
+        delay(1000);
+
         return result;
     }
 
     public void driveTo(Point p) {
         turnTo(angleFromBot(p.x, p.y));
-        forward(calculateDistance(p.x, p.y) - R.bot_length / 2);
+        forward(calculateDistance(p.x, p.y) - R.RFID_dis / 4);
     }
 
     private int leastKnownDirection() {
         // TODO: To search the most unfamiliar area.
-        if (botX < R.Frame_Size / 2) return 0;
-        if (Math.abs(angle - 90) < 10) return 180;
-        else return 90;
+
+        Point nearestP= findNearest(knownPoints);
+        int new_dir;
+        if (nearestP != null) {
+            new_dir= directionAwayFrom(nearestP);
+        } else {
+            if (botX < R.Frame_Size / 2) new_dir= 0;
+            else if (Math.abs(angle - 90) < 10) new_dir= 180;
+            else new_dir= 90;
+        }
+        return new_dir;
+    }
+
+    private int directionAwayFrom(Point p) {
+        int np_angle= angleFromBot(p.x, p.y);
+        int new_dir= (np_angle + 90) % 360;
+        if (new_dir < 315 && new_dir > 135) new_dir= (new_dir + 180) % 360;
+        return new_dir;
     }
 
     // ------------ Robot Methods ------------- //
@@ -188,7 +208,7 @@ public class Bot {
         boolean isLeft= diff < 0 && diff > -180 || diff > 180;
 //        System.out.println("Turning from: " + angle);
 //        System.out.println("Turning to: " + degree);
-        while (Math.abs(angle - degree) > 8) {
+        while (Math.abs(angle - degree) > 12) {
 //            System.out.println("angle: " + angle);
 //            System.out.println("degree: " + degree);
             spin(isLeft);
@@ -197,8 +217,16 @@ public class Bot {
     }
 
     public void spin(boolean isLeft) {
+        double radians= Math.toRadians(angle);
+        int botX_center= (int) (botX - R.bot_length / 2 * Math.cos(radians));
+        int botY_center= (int) (botY - R.bot_length / 2 * Math.sin(radians));
+
         angle= (angle + R.spin_angle * (isLeft ? -1 : 1) + 360) % 360;
-        delay(50);
+
+        double new_radians= Math.toRadians(angle);
+        botX= (int) (botX_center + R.bot_length / 2 * Math.cos(new_radians));
+        botY= (int) (botY_center + R.bot_length / 2 * Math.sin(new_radians));
+        delay(20);
     }
 
     public void forward(int distance) {
@@ -261,7 +289,7 @@ public class Bot {
 
     public boolean RFID() {
         for (Point p : knownPoints) {
-            if (calculateDistance(p.x, p.y) < R.RFID_dis + R.bot_length) {
+            if (calculateDistance(p.x, p.y) < R.RFID_dis) {
                 p.check();
             }
         }
@@ -287,15 +315,19 @@ public class Bot {
 
     public void drawBot(Graphics2D g) {
 
-        AffineTransform tx= new AffineTransform();
-        tx.rotate(Math.toRadians(angle), botX, botY);
+        double radians= Math.toRadians(angle);
+        int botX_center= (int) (botX - R.bot_length / 2 * Math.cos(radians));
+        int botY_center= (int) (botY - R.bot_length / 2 * Math.sin(radians));
 
-        Rectangle rec= new Rectangle(botX - R.bot_length / 2, botY - R.bot_width / 2, R.bot_length,
-            R.bot_width);
+        AffineTransform tx= new AffineTransform();
+        tx.rotate(Math.toRadians(angle), botX_center, botY_center);
+
+        Rectangle rec= new Rectangle(botX_center - R.bot_length / 2,
+            botY_center - R.bot_width / 2, R.bot_length, R.bot_width);
         Shape rotatedRec= tx.createTransformedShape(rec);
 
-        Rectangle head= new Rectangle(botX + R.bot_length / 2, botY - R.bot_width / 2, 10,
-            R.bot_width);
+        Rectangle head= new Rectangle(botX_center + R.bot_length / 2,
+            botY_center - R.bot_width / 2, 10, R.bot_width);
         Shape rotatedHead= tx.createTransformedShape(head);
 
         g.setColor(R.grey);
@@ -305,7 +337,10 @@ public class Bot {
         g.fill(rotatedHead);
 
         g.setColor(R.red);
-        g.fillOval(botX, botY, 3, 3);
+        g.fillOval(botX, botY, 5, 5);
+
+//        g.setColor(R.red);
+//        g.fillOval(botX_center, botY_center, 5, 5);
     }
 
     public void drawPoints(Graphics2D g) {
@@ -335,7 +370,11 @@ public class Bot {
     }
 
     public int calculateDistance(double x, double y) {
-        double dis= Math.sqrt(Math.pow(x - botX, 2) + Math.pow(y - botY, 2));
+        return calculateDistance(x, y, botX, botY);
+    }
+
+    public int calculateDistance(double x1, double y1, double x2, double y2) {
+        double dis= Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
         return (int) dis;
     }
 
@@ -359,7 +398,10 @@ public class Bot {
     public boolean check() {
         boolean result= false;
         for (Item item : pg.items) {
-            int dis= R.RFID_dis + R.bot_length + R.SQ_LENGTH * R.TILE_LENGTH;
+            int dis= R.RFID_dis + R.SQ_LENGTH * R.TILE_LENGTH + R.bot_length;
+            // double disa= calculateDistance(item.x(), item.y());
+            // System.out.println("distance: " + disa);
+
             if (calculateDistance(item.x(), item.y()) < dis) {
                 item.check();
                 if (item.isTarget()) result= true;
@@ -392,10 +434,14 @@ public class Bot {
 
     private void checkNearby() {
         for (Point p1 : knownPoints) {
+            // System.out.println("Running checkNearby " + p1.isChecked);
             if (p1.isChecked) {
+                // System.out.println("Checked!!!");
                 for (Point p2 : knownPoints) {
-                    if (Math.abs(p2.x - p1.x) < R.SQ_LENGTH * R.TILE_LENGTH) {
+                    int dis= calculateDistance(p1.x, p1.y, p2.x, p2.y);
+                    if (Math.abs(dis) < R.SQ_LENGTH * R.TILE_LENGTH) {
                         p2.check();
+
                     }
                 }
             }
