@@ -29,7 +29,7 @@ public class R {
 
     // Robot parameters
     /** Change of angle in degrees when spin() is called */
-    public final static int spin_angle= 5;
+    public final static int spin_angle= 4;
 
     /** Change of distance (in pixels) when move() is called */
     public final static int step= 5;
@@ -43,5 +43,7 @@ public class R {
     public final static int known_area_size= 200;
 
     public final static int detour_dis= 100;
+
+    public final static int scan_step= 20;
 
 }

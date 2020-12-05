@@ -102,8 +102,8 @@ public class Bot {
             } else System.out.println("Found!");
         } else {
             System.out.println("No point, searching");
-            turnTo(leastKnownDirection());
-            forward(R.US_dis);
+            // turnTo(leastKnownDirection());
+            forward(R.US_dis, true);
         }
     }
 
@@ -112,14 +112,13 @@ public class Bot {
         int disFromOrigin= calculateDistance(0, 0);
         while (disFromOrigin > 50) {
             faceOrigin();
-            ArrayList<Point> data= scan(10);
-            Point nearestP= findNearest(data);
+            Point nearestP= scanFront();
             if (nearestP != null) {
                 driveTo(nearestP);
                 detourBack();
             } else {
                 int forwardDis= Math.min(R.US_dis - R.detour_dis, disFromOrigin);
-                forward(forwardDis);
+                forward(forwardDis, true);
             }
             disFromOrigin= calculateDistance(0, 0);
         }
@@ -148,17 +147,17 @@ public class Bot {
         delay(500);
         int ang= angleFromBot(0, 0);
         turnTo((ang + 90) % 360);
-        forward(R.detour_dis);
+        forward(R.detour_dis, true);
     }
 
     public void detourPoint(Point p) {
         System.out.println("Detour, backing");
-        backward(R.detour_dis);
+        backward(R.detour_dis, true);
         // int ang= angleFromBot(p.x, p.y);
         System.out.println("Detour, turning");
         turnTo(directionAwayFrom(p));
         System.out.println("Detour, forwarding");
-        forward(R.bot_length);
+        forward(R.bot_length, true);
     }
 
     private ArrayList<Point> uncheckedPoints() {
@@ -178,7 +177,7 @@ public class Bot {
 
     public void driveTo(Point p) {
         turnTo(angleFromBot(p.x, p.y));
-        forward(calculateDistance(p.x, p.y) - R.RFID_dis / 4);
+        forward(calculateDistance(p.x, p.y) - R.RFID_dis / 4, true);
     }
 
     private int leastKnownDirection() {
@@ -209,18 +208,23 @@ public class Bot {
         // TODO: Implement this method with locomotion methods so that the
         // Minibot stays in the area marked by the black tape.
         // Feel free to modify forward() and move() to incorporate this feature.
-        int current_angle= angle;
-        int next_angle= degreeSubtraction(current_angle, 90);
+        System.out.println("Detouring from edge.");
+        int next_angle= degreeSubtraction(angle, -90);
+        delay(500);
+        backward(100, false);
+        delay(500);
         turnTo(next_angle);
     }
 
     // ------------ Robot Methods ------------- //
     public void turnTo(int degree) {
-        int diff= degree - angle;
-        boolean isLeft= diff < 0 && diff > -180 || diff > 180;
+        int diff= degreeSubtraction(degree, angle);
+        boolean isLeft= diff < 0;
+        degree= (degree + 360) % 360;
+
 //        System.out.println("Turning from: " + angle);
 //        System.out.println("Turning to: " + degree);
-        while (Math.abs(angle - degree) > 12) {
+        while (Math.abs(angle - degree) > 10) {
 //            System.out.println("angle: " + angle);
 //            System.out.println("degree: " + degree);
             spin(isLeft);
@@ -230,8 +234,8 @@ public class Bot {
 
     public void spin(boolean isLeft) {
         double radians= Math.toRadians(angle);
-        int botX_center= (int) (botX - R.bot_length / 2 * Math.cos(radians));
-        int botY_center= (int) (botY - R.bot_length / 2 * Math.sin(radians));
+        double botX_center= botX - R.bot_length / 2 * Math.cos(radians);
+        double botY_center= botY - R.bot_length / 2 * Math.sin(radians);
 
         angle= (angle + R.spin_angle * (isLeft ? -1 : 1) + 360) % 360;
 
@@ -241,65 +245,66 @@ public class Bot {
         delay(20);
     }
 
-    public void forward(int distance) {
+    public void forward(int distance, boolean edgeDetectionOn) {
         boolean isForward= distance > 0;
         double radians= Math.toRadians(angle);
         int targetX= botX + (int) (Math.cos(radians) * distance);
         int targetY= botY + (int) (Math.sin(radians) * distance);
 
-//        if (targetX < 0) targetX= 0;
-//        if (targetX > R.Frame_Size) targetX= R.Frame_Size;
-//
-//        if (targetY < 0) targetY= 0;
-//        if (targetY > R.Frame_Size) targetY= R.Frame_Size;
-
-        if (Math.abs(Math.sin(radians)) < 0.71) {
-            while (Math.abs(botX - targetX) > 20) {
-                move(radians, isForward);
-            }
-        } else {
-            while (Math.abs(botY - targetY) > 20) {
+        while (Math.abs(calculateDistance(targetX, targetY)) > 50) {
+            System.out.println(Math.abs(calculateDistance(targetX, targetY)));
+            if (readReflectance() && edgeDetectionOn) {
+                turnBackFromEdge();
+                break;
+            } else {
                 move(radians, isForward);
             }
         }
     }
 
-    public void backward(int distance) {
-        forward(-distance);
+    public void backward(int distance, boolean edgeDetectionOn) {
+        forward(-distance, edgeDetectionOn);
     }
 
     private void move(double radians, boolean isForward) {
-        if (!readReflectance()) {
-            int dir= isForward ? 1 : -1;
-            botX+= Math.cos(radians) * R.step * dir;
-            botY+= Math.sin(radians) * R.step * dir;
-            delay(20);
-        } else {
-            turnBackFromEdge();
-        }
+        int dir= isForward ? 1 : -1;
+        botX+= Math.cos(radians) * R.step * dir;
+        botY+= Math.sin(radians) * R.step * dir;
+        delay(20);
+
     }
 
-    public ArrayList<Point> scan(int range) {
-        delay(500);
-        ArrayList<Tile> tiles= tilesVisible();
-        ArrayList<Point> data= new ArrayList<>();
+    public void scan(int range) {
+        int end_angle= degreeSubtraction(angle, -range);
+        end_angle= (end_angle + 360) % 360;
 
+        System.out.println("end_angle: " + end_angle);
+        while (Math.abs(angle - end_angle) > 10) {
+            int new_angle= degreeSubtraction(angle, -R.scan_step);
+            turnTo(new_angle);
+            scanFront();
+        }
+        checkNearby();
+    }
+
+    private Point scanFront() {
+        ArrayList<Tile> tiles= tilesVisible();
+        Point myPoint= null;
         for (Tile tile : tiles) {
             int dis= calculateDistance(tile.x(), tile.y());
             int ang= angleFromBot(tile.x(), tile.y());
             int angDiff= Math.abs(degreeSubtraction(ang, angle));
 
-            if (dis < R.US_dis && angDiff < range) {
-                Point myPoint= new Point(tile.x(), tile.y());
+            if (dis < R.US_dis && angDiff < 2) {
+                myPoint= new Point(tile.x(), tile.y());
                 knownPoints.add(myPoint);
-                data.add(myPoint);
                 tile.scan();
-                delay(50);
+                break;
             }
         }
-        checkNearby();
-        updateKnownArea(range);
-        return data;
+        updateKnownArea();
+        delay(50);
+        return myPoint;
     }
 
     public boolean RFID() {
@@ -433,7 +438,8 @@ public class Bot {
         else return c > -180 ? c : c + 360;
     }
 
-    private void updateKnownArea(int range) {
+    private void updateKnownArea() {
+        int range= 2;
         for (int i= 0; i < R.known_area_size; i++ ) {
             for (int j= 0; j < R.known_area_size; j++ ) {
                 int size= R.Frame_Size / R.known_area_size;
