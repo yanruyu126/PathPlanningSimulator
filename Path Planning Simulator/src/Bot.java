@@ -145,6 +145,7 @@ public class Bot {
     }
 
     public void detourBack() {
+        delay(500);
         int ang= angleFromBot(0, 0);
         turnTo((ang + 90) % 360);
         forward(R.detour_dis);
@@ -208,7 +209,9 @@ public class Bot {
         // TODO: Implement this method with locomotion methods so that the
         // Minibot stays in the area marked by the black tape.
         // Feel free to modify forward() and move() to incorporate this feature.
-
+        int current_angle= angle;
+        int next_angle= degreeSubtraction(current_angle, 90);
+        turnTo(next_angle);
     }
 
     // ------------ Robot Methods ------------- //
@@ -239,7 +242,6 @@ public class Bot {
     }
 
     public void forward(int distance) {
-        // TODO: Edge!!!
         boolean isForward= distance > 0;
         double radians= Math.toRadians(angle);
         int targetX= botX + (int) (Math.cos(radians) * distance);
@@ -267,11 +269,14 @@ public class Bot {
     }
 
     private void move(double radians, boolean isForward) {
-        int dir= isForward ? 1 : -1;
-        botX+= Math.cos(radians) * R.step * dir;
-        botY+= Math.sin(radians) * R.step * dir;
-        System.out.println(readReflectance());
-        delay(20);
+        if (!readReflectance()) {
+            int dir= isForward ? 1 : -1;
+            botX+= Math.cos(radians) * R.step * dir;
+            botY+= Math.sin(radians) * R.step * dir;
+            delay(20);
+        } else {
+            turnBackFromEdge();
+        }
     }
 
     public ArrayList<Point> scan(int range) {
@@ -353,9 +358,6 @@ public class Bot {
 
         g.setColor(R.red);
         g.fillOval(botX, botY, 5, 5);
-
-//        g.setColor(R.red);
-//        g.fillOval(botX_center, botY_center, 5, 5);
     }
 
     public void drawPoints(Graphics2D g) {
