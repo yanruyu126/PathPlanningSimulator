@@ -31,8 +31,12 @@ public class GUI extends JFrame {
         new GUI();
         Timer t= new Timer(100, canvas);
         t.start();
+        Bot mybot= canvas.bot;
 
-        Bot myBot= canvas.bot;
-        myBot.search();
+        while (!canvas.start()) {
+            mybot.delay(100);
+
+        }
+        mybot.search();
     }
 }

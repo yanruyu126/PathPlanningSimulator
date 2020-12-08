@@ -10,7 +10,7 @@ public class Playground {
     public Playground() {
         tiles= new ArrayList<>();
         items= new ArrayList<>();
-        generateItems();
+//        generateItems();s
 
     }
 
@@ -28,6 +28,18 @@ public class Playground {
         tiles.addAll(item3.tiles());
         tiles.addAll(item4.tiles());
 
+    }
+
+    public void addItem(int x, int y) {
+        Item my_item= new Item(x, y, false);
+        items.add(my_item);
+        tiles.addAll(my_item.tiles());
+    }
+
+    public void addTarget(int x, int y) {
+        Item my_item= new Item(x, y, true);
+        items.add(my_item);
+        tiles.addAll(my_item.tiles());
     }
 
     public void draw(Graphics2D g) {

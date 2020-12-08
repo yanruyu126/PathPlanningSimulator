@@ -102,7 +102,7 @@ public class Bot {
             } else System.out.println("Found!");
         } else {
             System.out.println("No point, searching");
-            // turnTo(leastKnownDirection());
+            turnTo(leastKnownDirection());
             forward(R.US_dis, true);
         }
     }
@@ -252,7 +252,7 @@ public class Bot {
         int targetY= botY + (int) (Math.sin(radians) * distance);
 
         while (Math.abs(calculateDistance(targetX, targetY)) > 50) {
-            System.out.println(Math.abs(calculateDistance(targetX, targetY)));
+//            System.out.println(Math.abs(calculateDistance(targetX, targetY)));
             if (readReflectance() && edgeDetectionOn) {
                 turnBackFromEdge();
                 break;
@@ -278,7 +278,7 @@ public class Bot {
         int end_angle= degreeSubtraction(angle, -range);
         end_angle= (end_angle + 360) % 360;
 
-        System.out.println("end_angle: " + end_angle);
+//        System.out.println("end_angle: " + end_angle);
         while (Math.abs(angle - end_angle) > 10) {
             int new_angle= degreeSubtraction(angle, -R.scan_step);
             turnTo(new_angle);
