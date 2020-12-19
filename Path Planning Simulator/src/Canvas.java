@@ -12,7 +12,7 @@ public class Canvas extends JPanel implements ActionListener, MouseListener {
     private static final long serialVersionUID= 1L;
     Bot bot;
     Playground pg;
-    JButton addItemButton, addTargetButton, startButton;
+    JButton addItemButton, addTargetButton, startButton, pathButton;
     int INIT= 0;
     int RUNNING= 1;
     int state;
@@ -48,6 +48,8 @@ public class Canvas extends JPanel implements ActionListener, MouseListener {
                 addingTarget= true;
             } else if (e.getSource() == startButton) {
                 state= RUNNING;
+            } else if (e.getSource() == pathButton) {
+                printPath();
             }
         }
         repaint();
@@ -60,13 +62,20 @@ public class Canvas extends JPanel implements ActionListener, MouseListener {
         addTargetButton.addActionListener(this);
         startButton= new JButton("Start");
         startButton.addActionListener(this);
+        pathButton= new JButton("Create Path");
+        pathButton.addActionListener(this);
         this.add(addItemButton);
         this.add(addTargetButton);
         this.add(startButton);
+        this.add(pathButton);
     }
 
     public boolean start() {
         return state == RUNNING;
+    }
+
+    public void printPath() {
+        // TODO: Merge two projects
     }
 
     @Override
@@ -108,21 +117,5 @@ public class Canvas extends JPanel implements ActionListener, MouseListener {
         // TODO Auto-generated method stub
 
     }
-
-//    public void mouseClicked(MouseEvent e) {
-//        String message =
-//        if (e.getButton() == MouseEvent.NOBUTTON) {
-//          textArea.setText("No button clicked...");
-//        } else if (e.getButton() == MouseEvent.BUTTON1) {
-//          textArea.setText("Button 1 clicked...");
-//        } else if (e.getButton() == MouseEvent.BUTTON2) {
-//          textArea.setText("Button 2 clicked...");
-//        } else if (e.getButton() == MouseEvent.BUTTON3) {
-//          textArea.setText("Button 3 clicked...");
-//        }
-//
-//        System.out.println("Number of click: " + e.getClickCount());
-//        System.out.println("Click position (X, Y):  " + e.getX() + ", " + e.getY());
-//      }
 
 }

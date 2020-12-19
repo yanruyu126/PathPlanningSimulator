@@ -65,7 +65,7 @@ public class Bot {
     public void search() {
         while (!hasFound) {
             System.out.println("Ultrasonic Scanning");
-            scan(90);
+            scan(135);
             updatePath();
         }
         delay(500);
